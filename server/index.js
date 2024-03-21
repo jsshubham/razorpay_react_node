@@ -51,6 +51,27 @@ app.post("/order/validate", async (req, res) => {
   });
 });
 
+app.post('/order/pay', async (req, res) => {
+  const { order_id, amount, currency } = req.body;
+  // return res.json(options)
+  try {
+    var instance = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_SECRET })
+    var response = await instance.payments.capture(order_id, amount, currency)
+
+    if (!response) {
+      return res.status(500).send("Error");
+    }
+    res.json(response);
+  }
+  catch (e) {
+    console.log('ee', e)
+    res.status(500).send("Error");
+  }
+
+})
+
+
+
 app.listen(PORT, () => {
   console.log("Listening on port", PORT);
 });
